@@ -8,7 +8,7 @@ from training import Trainer
 if __name__ == '__main__':
 
     # Path to the database
-    data_dir = "/home/cdoire/dev/CelebA/64"
+    data_dir = "/path/to/training/database/"
 
     # The device (GPU/CPU) on which to execute the code
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -28,7 +28,7 @@ if __name__ == '__main__':
                       data_path=data_dir,
                       batch_size=4,
                       learning_rate=0.0001,
-                      weight_norm=False,
+                      weight_norm=True,
                       saving_directory=saving_directory,
                       device=device)         
 
