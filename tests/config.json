@@ -1,1 +1,0 @@
-{"name": "RealNVP", "context_blocks": 2, "input_channels": 3, "hidden_channels": 64, "quantization": 65536}
