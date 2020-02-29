@@ -52,6 +52,7 @@ class Trainer:
         self.__learning_rate = learning_rate
         self.__batch_size = batch_size
         self.__weight_norm = weight_norm
+        self.__data_augmentation = data_augmentation
         self.__device = device
         self.__best_val = None
         # Prepare output dir
@@ -82,7 +83,7 @@ class Trainer:
         train_loader = td.DataLoader(
             ImageDataset(self.__training_dir,
                          train=True,
-                         data_augmentation=0.1),
+                         data_augmentation=self.__data_augmentation),
             shuffle=True,
             batch_size=self.__batch_size,
             num_workers=4)
@@ -102,6 +103,7 @@ class Trainer:
         config["learning_rate"] = self.__learning_rate
         config["batch_size"] = self.__batch_size
         config["weight_norm"] = self.__weight_norm
+        config["data_augmentation"] = self.__data_augmentation
         with open(os.path.join(self.__saving_dir, "config.json"), 'w') as file:
             json.dump(config, file)
         print("Model being trained is {0}".format(config["name"]))
@@ -110,6 +112,8 @@ class Trainer:
         print("Batch size = {0} and learning rate = {1}".format(
             config["batch_size"], config["learning_rate"]))
         print("Weight Normalization is set to {}".format(config["weight_norm"]))
+        print("Data Augmentation proportion is {}".format(
+            config["data_augmentation"]))
         # ----------------------------------------------------------------------
         # Training Start
         # ----------------------------------------------------------------------

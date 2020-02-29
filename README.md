@@ -1,6 +1,6 @@
 # pytorch-nflow
 
-A pytorch implementation of Normalizing Flow networks
+A pytorch re-implementation of 2 Normalizing Flow networks : Real-NVP and Glow.
 
 This program is distributed in the hope that it will be useful, but without any warranty; without even the implied warranty of merchantability or fitness for a particular purpose. See the GNU General Public License for more details.
 

@@ -28,9 +28,10 @@ if __name__ == '__main__':
                       data_path=data_dir,
                       batch_size=4,
                       learning_rate=0.0001,
-                      weight_norm=True,
                       saving_directory=saving_directory,
-                      device=device)         
+                      device=device,
+                      weight_norm=True,
+                      data_augmentation=0.1)         
 
     # Start the learning
     trainer.run()
