@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+from .model import _Model
 from layers import LogitPreProcess, GlowCoupling, ActNorm2d, \
     Squeeze2x2, Invertible1x1Conv
 
@@ -10,7 +11,7 @@ from layers import LogitPreProcess, GlowCoupling, ActNorm2d, \
 # ------------------------------------------------------------------------------
 
 
-class Glow(nn.Module):
+class Glow(_Model):
     """
     Glow : Generative Flow with Invertible 1x1 Convolutions
 
@@ -32,10 +33,12 @@ class Glow(nn.Module):
                  input_channels: int = 3, hidden_channels: int = 64,
                  quantization: float = 256, lu_decomposition: bool = False):
         super(Glow, self).__init__()
-        self.config = {"name": "glow",
-                       "num_levels": context_blocks,
-                       "num_flows": flow_steps,
-                       "num_features": hidden_channels,
+        self.config = {"name": "Glow",
+                       "context_blocks": context_blocks,
+                       "flow_steps": flow_steps,
+                       "input_channels": input_channels,
+                       "hidden_channels": hidden_channels,
+                       "quantization": quantization,
                        "lu_decomposition": lu_decomposition}
         self.squeeze = Squeeze2x2()
         self.pre_process = \
@@ -43,6 +46,15 @@ class Glow(nn.Module):
         self.flows = _Glow(context_blocks, flow_steps,
                            4 * input_channels, hidden_channels,
                            lu_decomposition)
+
+    @classmethod
+    def from_config(cls, config: dict):
+        return cls(context_blocks=config["context_blocks"],
+                   flow_steps=config["flow_steps"],
+                   input_channels=config["input_channels"],
+                   hidden_channels=config["hidden_channels"],
+                   quantization=config["quantization"],
+                   lu_decomposition=config["lu_decomposition"])
 
     # --------------------------------------------------------------------------
 

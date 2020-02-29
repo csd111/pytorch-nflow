@@ -13,6 +13,19 @@ from .losses import NLLFlowLoss
 class Trainer:
     """
     Performs automated training on a normalizing flow model
+
+    :param model: The torch.nn Module to train
+    :param data_path: the path to the root folder containing the database
+    :param batch_size: the number of samples in each batch
+    :param learning_rate: the learning rate for SGD
+    :param saving_directory: where to save the results (network weights and
+        image samples)
+    :param device: either cpu or a gpu, the device on which training is to
+        be performed
+    :param weight_norm: whether to use weight norm for training (default:
+        {False})
+    :param data_augmentation: global probability of occurrence for the data
+        augmentation (default:{0})
     """
 
     # --------------------------------------------------------------------------
@@ -24,20 +37,10 @@ class Trainer:
                  data_path: str,
                  batch_size: int,
                  learning_rate: float,
-                 weight_norm: bool,
                  saving_directory: str,
-                 device: torch.device):
-        """
-        :param model: The torch.nn Module to train
-        :param data_path: the path to the root folder containing the database
-        :param batch_size: the number of samples in each batch
-        :param learning_rate: the learning rate for SGD
-        :param weight_norm: whether to use weight norm for training
-        :param saving_directory: where to save the results (network weights and
-         image samples)
-        :param device: either cpu or a gpu, the device on which training is to
-         be performed
-        """
+                 device: torch.device,
+                 weight_norm: bool = False,
+                 data_augmentation: float = 0.):
         self.__model = model
         self.__optimizer = \
             torch.optim.Adam(self.__model.parameters(), learning_rate)
@@ -46,6 +49,7 @@ class Trainer:
         self.__to_stop = False
         self.__saving_dir = saving_directory
         self.__training_dir = data_path
+        self.__learning_rate = learning_rate
         self.__batch_size = batch_size
         self.__weight_norm = weight_norm
         self.__device = device
@@ -94,8 +98,18 @@ class Trainer:
         # ----------------------------------------------------------------------
         config = self.__model.config
         config["image_size"] = train_loader.dataset.image_size
+        config["training_dir"] = self.__training_dir
+        config["learning_rate"] = self.__learning_rate
+        config["batch_size"] = self.__batch_size
+        config["weight_norm"] = self.__weight_norm
         with open(os.path.join(self.__saving_dir, "config.json"), 'w') as file:
             json.dump(config, file)
+        print("Model being trained is {0}".format(config["name"]))
+        print("Data is at {0} and is of size {1}".format(config["training_dir"], 
+            config["image_size"]))
+        print("Batch size = {0} and learning rate = {1}".format(
+            config["batch_size"], config["learning_rate"]))
+        print("Weight Normalization is set to {}".format(config["weight_norm"]))
         # ----------------------------------------------------------------------
         # Training Start
         # ----------------------------------------------------------------------
@@ -178,10 +192,7 @@ class Trainer:
 
     def _train(self, data: torch.Tensor):
         """
-        Performs one step of training.
-        :param data: The input tensor
-        :param target: The expected output tensor
-        :return: loss value
+        Performs one step of training
         """
         self.__model.train()
         self.__optimizer.zero_grad()
@@ -193,9 +204,7 @@ class Trainer:
 
     def _evaluate(self, data: torch.Tensor):
         """
-        Performs one step of validation.
-        :param data: The input tensor
-        :return: loss value
+        Performs one step of validation
         """
         self.__model.eval()
         output, sum_log_det = self.__model(data)
@@ -209,6 +218,7 @@ class Trainer:
     def _sample(self, shape: torch.Size, filename: str):
         """
         Performs inference on the network to get several samples
+
         :param shape: The input tensor size.
         :param filename: name of the output file
         """

@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+from .model import _Model
 from layers import LogitPreProcess, RealNVPCoupling, \
     Squeeze2x2, AlternateSqueeze2x2
 
@@ -9,13 +10,15 @@ from layers import LogitPreProcess, RealNVPCoupling, \
 # ------------------------------------------------------------------------------
 
 
-class RealNVP(nn.Module):
+class RealNVP(_Model):
     
     """
     Real-NVP normalising flow
+
     ----------------------------------------------------------------------------
     Ref : Density estimation using Real NVP - https://arxiv.org/abs/1605.08803
     ----------------------------------------------------------------------------
+
     :param context_blocks: the number of resolutions in the RealNVP model
     :param input_channels: the number of channels of the input tensor
     :param hidden_channels: the number of channels in the affine coupling layers
@@ -25,13 +28,22 @@ class RealNVP(nn.Module):
     def __init__(self, context_blocks: int = 2, input_channels: int = 3,
                  hidden_channels: int = 64, quantization: float = 256):
         super(RealNVP, self).__init__()
-        self.config = {"name": "real-nvp",
-                       "num_levels": context_blocks,
-                       "num_features": hidden_channels}
+        self.config = {"name": "RealNVP",
+                       "context_blocks": context_blocks,
+                       "input_channels": input_channels,
+                       "hidden_channels": hidden_channels,
+                       "quantization": quantization}
         self.pre_process = \
             LogitPreProcess(scaling=0.9, quantization=quantization)
         self.flows = _RealNVP(0, context_blocks,
                               input_channels, hidden_channels)
+
+    @classmethod
+    def from_config(cls, config: dict):
+        return cls(context_blocks=config["context_blocks"],
+                   input_channels=config["input_channels"],
+                   hidden_channels=config["hidden_channels"],
+                   quantization=config["quantization"])
 
     # --------------------------------------------------------------------------
 
