@@ -19,7 +19,7 @@ python -m unittest discover tests/
 ## Basic Usage
 
 To start things off, you are advised to have a look at the training script ```train_model.py```.
-In essence, you should be able to get things running just by changing the path of the root folder of your database of choice.
+In essence, you should be able to get things running just by changing the path to the root folder of your database of choice.
 
 Please note that it requires the data to be availble as raw images in a pillow-readable format, separated into a "train" and a "val" subfolder.
 
@@ -27,9 +27,9 @@ Please note that it requires the data to be availble as raw images in a pillow-r
 ## References
 
 Tensorflow code: 
-Real-NVP - https://github.com/tensorflow/models/tree/master/research/real_nvp
-OpenAI Glow : https://github.com/openai/glow
-Flow++ : https://github.com/aravindsrinivas/flowpp
+- Real-NVP https://github.com/tensorflow/models/tree/master/research/real_nvp
+- OpenAI Glow https://github.com/openai/glow
+- Flow++ https://github.com/aravindsrinivas/flowpp
 
 Other pytorch implementations of normalizing flows :
 - https://github.com/chrischute/glow
